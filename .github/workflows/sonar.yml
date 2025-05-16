@@ -1,0 +1,37 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main   # يمكنك تغيير الاسم حسب اسم الفرع الرئيسي عندك
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # مهم للحصول على التاريخ الكامل
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies (اختياري)
+        run: |
+          pip install pytest
+
+      - name: Download SonarScanner CLI
+        uses: sonarsource/sonar-scanner-cnb:latest
+
+      - name: Analyze with SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # ستخزن التوكن هنا لاحقًا
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=SamarArfa_code-review-framework \
+            -Dsonar.organization=samararfa \
+            -Dsonar.sources=src \
+            -Dsonar.host.url=https://sonarcloud.io  \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
